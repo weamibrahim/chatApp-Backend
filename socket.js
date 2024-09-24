@@ -5,9 +5,7 @@ const Message = require('./Models/Message');
 module.exports = function (server) {
   const io = socketIO(server, {
     cors: {
-      origin: ["https://chat-app-2cap.vercel.app", 
-      "http://localhost:5173"  ],
-      credentials: true
+      origin: '*',
     }
   });
 
