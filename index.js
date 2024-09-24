@@ -11,6 +11,7 @@ const port = process.env.PORT;
 // Middleware to parse JSON data
 app.use(express.json());
 app.use(cors()); 
+app.options('*', cors()); 
 
 
 // Import routes
