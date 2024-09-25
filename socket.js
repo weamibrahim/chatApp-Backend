@@ -5,7 +5,9 @@ const Message = require('./Models/Message');
 module.exports = function (server) {
   const io = socketIO(server, {
     cors: {
-      origin: '*',
+      origin: "http://localhost:5173", 
+      methods: ["GET", "POST"],
+      credentials: true
     }
   });
 
