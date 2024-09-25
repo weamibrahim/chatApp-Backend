@@ -4,22 +4,15 @@ const mongoose = require('mongoose');
 const http = require('http');
 const cors = require('cors');
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT||8080;
+
+
 
 // Middleware to parse JSON data
 app.use(express.json());
+app.use(cors()); 
+app.options('*', cors()); 
 
-// CORS configuration
-const allowedOrigins = [
-  'http://localhost:5173',
- 
-];
-app.use(cors({
-  origin: allowedOrigins, 
-  methods: ['GET', 'POST'], 
-  credentials: true, 
-}));
-app.options('*', cors());
 
 // Import routes
 const UserRoute = require('./Routes/UserRoute');
@@ -30,7 +23,10 @@ app.use('/api/users', UserRoute);
 app.use('/api/messages', MessageRoute);
 
 // Connect to MongoDB using Mongoose
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, {
+ // useNewUrlParser: true,
+  //useUnifiedTopology: true,
+})
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB:', err));
 
