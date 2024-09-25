@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const http = require('http');
 const cors = require('cors');
 const app = express();
-const port = process.env.PORT||8080;
+const port = process.env.PORT||5000;
 
 
 
@@ -29,11 +29,14 @@ app.use('/api/messages', MessageRoute);
 
 // Connect to MongoDB using Mongoose
 mongoose.connect(process.env.MONGODB_URI, {
- // useNewUrlParser: true,
-  //useUnifiedTopology: true,
+ useNewUrlParser: true,
+  useUnifiedTopology: true,
 })
   .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('Could not connect to MongoDB:', err));
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // Create an HTTP server
 const server = http.createServer(app);
