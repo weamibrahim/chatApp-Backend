@@ -5,7 +5,10 @@ const Message = require('./Models/Message');
 module.exports = function (server) {
   const io = socketIO(server, {
     cors: {
-      origin: "http://localhost:5173", 
+      origin: [
+        'http://localhost:5173', // Local frontend
+        
+      ],
       methods: ["GET", "POST"],
       credentials: true
     }
@@ -14,15 +17,12 @@ module.exports = function (server) {
   io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
-
     socket.on('join', async (userId) => {
       socket.join(userId);
       socket.userId = userId;
       await User.findByIdAndUpdate(userId, { status: "online" });
       io.emit('updateUserStatus', { userId, status: "online" });
     });
-
-   
 
     // Listen for sending a message from the client
     socket.on('sendMessage', async (messageData) => {
@@ -40,10 +40,11 @@ module.exports = function (server) {
       }
     });
 
+    // Handle user logout
     socket.on('logout', async (userId) => {
       await User.findByIdAndUpdate(userId, { status: "offline" });
       io.emit('updateUserStatus', { userId, status: "offline" });
-    })
+    });
 
     // Handle user disconnect
     socket.on('disconnect', async () => {
