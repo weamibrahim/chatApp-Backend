@@ -10,7 +10,11 @@ const port = process.env.PORT||8080;
 
 // Middleware to parse JSON data
 app.use(express.json());
-app.use(cors()); 
+app.use(cors(
+  {
+    origin: 'http://localhost:5173',
+  }
+)); 
 app.options('*', cors()); 
 
 
