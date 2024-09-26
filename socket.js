@@ -38,6 +38,13 @@ module.exports = function (server) {
       }
     });
 
+  
+ socket.on('typing', (data) => {
+  const {  receiverId } = data;
+  io.to(receiverId).emit('userTyping');
+});
+
+
     socket.on('logout', async (userId) => {
       await User.findByIdAndUpdate(userId, { status: "offline" });
       io.emit('updateUserStatus', { userId, status: "offline" });
