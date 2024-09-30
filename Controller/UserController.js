@@ -1,5 +1,4 @@
 const User = require("../Models/User");
-
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
@@ -158,9 +157,7 @@ UserController.forgotPassword = async (req, res) => {
 UserController.resetPassword = async (req, res) => {
   try {
     console.log(req.body);
-    
     const { password , resetToken} = req.body;
-    console.log(resetToken);
 
     const decodedToken = jwt.verify(resetToken,process.env.ACCESS_TOKEN_SECRET);
     console.log(decodedToken);
@@ -174,7 +171,7 @@ UserController.resetPassword = async (req, res) => {
       { new: true }
     );
     console.log(updatedUser);
-    res.json({  message: "Password updated successfully" });
+    res.json({ updatedUser, message: "Password updated successfully" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
