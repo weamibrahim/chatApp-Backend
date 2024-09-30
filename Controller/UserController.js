@@ -155,14 +155,12 @@ UserController.forgotPassword = async (req, res) => {
 
 // reset password
 UserController.resetPassword = async (req, res) => {
+  
   try {
     console.log(req.body);
-    const { password , resetToken} = req.body;
+    const { password } = req.body;
 
-    const decodedToken = jwt.verify(resetToken,process.env.ACCESS_TOKEN_SECRET);
-    console.log(decodedToken);
-
-    const userId = decodedToken.userId;
+   const userId = req.user.userId;
     console.log(userId);
     const hashedPassword = await bcrypt.hash(password, 10);
     const updatedUser = await User.findByIdAndUpdate(
