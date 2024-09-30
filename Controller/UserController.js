@@ -1,7 +1,7 @@
 const User = require("../Models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const nodemailer = require('nodemailer');
 const UserController = {};
 
 // Register a new user
@@ -113,5 +113,63 @@ UserController.deleteUser = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+// forgot password
+UserController.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  console.log(email);
+  
+  try {
+    const user = await User.findOne({ email });
+    console.log(user);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
+    const resetToken = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+    console.log(resetToken);
+    const resetLink = `${process.env.CLIENT_URL}/resetPassword/${resetToken}`;
+    console.log(resetLink);
+
+    // Send reset email
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      to: email,
+      subject: 'Password Reset',
+      html: `<p>Click the following link to reset your password: <a href="${resetLink}">Reset Password</a></p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: 'Email sent successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+}
+
+// reset password
+UserController.resetPassword = async (req, res) => {
+  try {
+    const { password , resetToken} = req.body;
+
+    const decodedToken = jwt.verify(resetToken, process.env.ACCESS_TOKEN_SECRET);
+
+    const userId = decodedToken.userId;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { password: hashedPassword },
+      { new: true }
+    );
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 module.exports = UserController;
