@@ -173,7 +173,9 @@ UserController.resetPassword = async (req, res) => {
     console.log(updatedUser);
     res.json({ updatedUser, message: "Password updated successfully" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+   
+    console.log('Token verification failed:', error.message);
+    return res.status(401).json({ message: 'Invalid or expired token' });
   }
 };
 module.exports = UserController;
