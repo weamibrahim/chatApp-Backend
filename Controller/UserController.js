@@ -1,4 +1,5 @@
 const User = require("../Models/User");
+
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require('nodemailer');
@@ -156,6 +157,7 @@ UserController.forgotPassword = async (req, res) => {
 // reset password
 UserController.resetPassword = async (req, res) => {
   try {
+    console.log(req.body);
     const { password , resetToken} = req.body;
     console.log(resetToken);
 
