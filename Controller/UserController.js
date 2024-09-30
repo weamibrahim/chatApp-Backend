@@ -156,7 +156,7 @@ UserController.forgotPassword = async (req, res) => {
 // reset password
 UserController.resetPassword = async (req, res) => {
   console.log("req.body",req.body);
-   
+   //console.log(req.body);
    const { password } = req.body;
   const userId = req.user?.userId; // Safely access userId
 
@@ -164,12 +164,7 @@ UserController.resetPassword = async (req, res) => {
       return res.status(401).json({ message: 'User not authenticated' });
   }
   try {
-    //console.log(req.body);
-    const { password } = req.body;
-
-  
- 
-    const hashedPassword = await bcrypt.hash(password, 10);
+   const hashedPassword = await bcrypt.hash(password, 10);
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { password: hashedPassword },
