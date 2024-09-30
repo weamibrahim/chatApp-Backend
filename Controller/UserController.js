@@ -158,6 +158,7 @@ UserController.forgotPassword = async (req, res) => {
 UserController.resetPassword = async (req, res) => {
   try {
     console.log(req.body);
+    
     const { password , resetToken} = req.body;
     console.log(resetToken);
 
