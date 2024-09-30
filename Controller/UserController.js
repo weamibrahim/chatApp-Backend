@@ -155,33 +155,26 @@ UserController.forgotPassword = async (req, res) => {
 
 // reset password
 UserController.resetPassword = async (req, res) => {
-  const { password } = req.body;
-
- 
-  const token = req.headers.authorization.split(' ')[1]; 
-  console.log('token:', token);
-
+  console.log("req.body",req.body);
   try {
-    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    console.log('decodedToken:', decodedToken);
-    const userId = decodedToken.userId; 
-
-    if (!userId) {
-      return res.status(401).json({ message: 'User not authenticated' });
-    }
-
+    //console.log(req.body);
+    const { password } = req.body;
+console.log(password);
+   const userId = req.user.userId;
+   console.log("userId",userId);
+ 
     const hashedPassword = await bcrypt.hash(password, 10);
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { password: hashedPassword },
       { new: true }
     );
-
+    console.log(updatedUser);
     res.json({ updatedUser, message: "Password updated successfully" });
   } catch (error) {
-    console.log('Error in resetPassword:', error.message);
+   
+    console.log('Token verification failed:', error.message);
     return res.status(401).json({ message: 'Invalid or expired token' });
   }
 };
-
 module.exports = UserController;
