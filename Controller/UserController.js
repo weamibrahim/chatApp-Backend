@@ -170,7 +170,7 @@ UserController.resetPassword = async (req, res) => {
       { new: true }
     );
     console.log(updatedUser);
-    res.json(updatedUser, { message: 'Password updated successfully' });
+    res.json({  message: "Password updated successfully" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
