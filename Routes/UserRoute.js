@@ -14,7 +14,7 @@ router.put("/:id",verifyToken,upload.single("image"), UserController.updateUser)
 router.delete("/:id",verifyToken, UserController.deleteUser);
 
 // forgot password
-router.put("/reset-password",verifyToken, UserController.resetPassword);
+router.put("/reset-password",UserController.resetPassword);
 router.post("/forgot-password", UserController.forgotPassword);
 
 
