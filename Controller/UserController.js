@@ -159,9 +159,10 @@ UserController.resetPassword = async (req, res) => {
   try {
     console.log(req.body);
     const { password } = req.body;
-
+console.log(password);
    const userId = req.user.userId;
-    console.log(userId);
+   console.log("userId",userId);
+ 
     const hashedPassword = await bcrypt.hash(password, 10);
     const updatedUser = await User.findByIdAndUpdate(
       userId,
