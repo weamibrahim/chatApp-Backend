@@ -147,7 +147,7 @@ UserController.forgotPassword = async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ message: 'Email sent successfully' });
+    res.status(200).json({ message:'Email sent successfully'});
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -158,16 +158,19 @@ UserController.resetPassword = async (req, res) => {
   try {
     const { password , resetToken} = req.body;
 
-    const decodedToken = jwt.verify(resetToken, process.env.ACCESS_TOKEN_SECRET);
+    const decodedToken = jwt.verify(resetToken,process.env.ACCESS_TOKEN_SECRET);
+    console.log(decodedToken);
 
     const userId = decodedToken.userId;
+    console.log(userId);
     const hashedPassword = await bcrypt.hash(password, 10);
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { password: hashedPassword },
       { new: true }
     );
-    res.json(updatedUser);
+    console.log(updatedUser);
+    res.json(updatedUser, { message: 'Password updated successfully' });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
