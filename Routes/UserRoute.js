@@ -6,7 +6,7 @@ const  verifyToken= require('../Middelware/Authentication');
 const UserController = require("../Controller/UserController");
 
 // Define the routes
-router.get("/:userId",verifyToken, UserController.getAllUsers);
+// router.get("/:userId",verifyToken, UserController.getAllUsers);
 router.get("/user/:id",verifyToken, UserController.getUser);
 router.post("/register",upload.single("image"), UserController.register);
 router.post("/login", UserController.login);
