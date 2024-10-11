@@ -28,7 +28,7 @@ module.exports = function (server) {
         console.log("userid", userId);
         const allUsers = await User.find({ _id: { $ne: userId } });
        // console.log(allUsers);
-        io.emit("users", allUsers);
+        socket.emit("users", allUsers);
       } catch (error) {
         console.error("Error saving message:", error);
       }
