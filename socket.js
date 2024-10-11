@@ -27,7 +27,7 @@ module.exports = function (server) {
       try {
         console.log("userid", userId);
         const allUsers = await User.find({ _id: { $ne: userId } });
-        console.log(allUsers);
+       // console.log(allUsers);
         io.emit("users", allUsers);
       } catch (error) {
         console.error("Error saving message:", error);
@@ -59,6 +59,30 @@ module.exports = function (server) {
       }
     });
 
+   socket.on("updateMessage", async (data) => {
+    console.log("data", data);
+      try {
+        const { messageId,senderId, message } = data;
+        const oldMessage = await Message.findById(messageId);
+
+       // console.log("message", oldMessage);
+        if (oldMessage.senderId.toString() === senderId) {
+         const newMessage = await Message.findByIdAndUpdate(messageId, { message }, { new: true });
+
+          console.log("newMessage", newMessage);
+
+          io.emit("messageUpdate", { messageId, message });
+        } else {
+          socket.emit("notAuthorized", {
+            message: "You are not authorized to update this message.",
+          });
+        }
+      
+      } catch (error) {
+        console.error("Error saving message:", error);
+      }
+    });
+       
     socket.on("deleteMessage", async (data) => {
       try {
         console.log("data", data);
@@ -81,6 +105,7 @@ module.exports = function (server) {
       }
     });
 
+    // Handle user logout
     socket.on("logout", async (userId) => {
       try {
         await User.findByIdAndUpdate(userId, { status: "offline" });
