@@ -1,7 +1,7 @@
 const Message = require("../Models/Message");
 
 const MessageController = {};
-MessageController.getConversationMessages = async (req, res) => {
+MessageController.getMessages = async (req, res) => {
   try {
     const { userId, otherUserId } = req.params;
 

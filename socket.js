@@ -1,6 +1,7 @@
 const socketIO = require("socket.io");
 const User = require("./Models/User");
 const Message = require("./Models/Message");
+const Conversation = require("./Models/Conversation");
 
 module.exports = function (server) {
   const io = socketIO(server, {
@@ -18,6 +19,7 @@ module.exports = function (server) {
         socket.userId = userId;
         await User.findByIdAndUpdate(userId, { status: "online" });
         io.emit("updateUserStatus", { userId, status: "online" });
+
       } catch (error) {
         console.error("Error saving message:", error);
       }
@@ -27,28 +29,72 @@ module.exports = function (server) {
       try {
         console.log("userid", userId);
         const allUsers = await User.find({ _id: { $ne: userId } });
-       // console.log(allUsers);
-        io.emit("users", allUsers);
+    
+        
+        const userWithLastMessages = await Promise.all(
+          allUsers.map(async (user) => {
+          
+            const conversation = await Conversation.findOne({
+              participants: { $all: [userId, user._id] },
+            }).populate('lastMessage');
+    
+            return {
+              user,
+              lastMessage: conversation ? conversation.lastMessage : null,
+            };
+          })
+        );
+    
+       
+        io.emit("users", userWithLastMessages);
       } catch (error) {
-        console.error("Error saving message:", error);
+        console.error("Error fetching users:", error);
       }
     });
+    
 
-    // Listen for sending a message from the client
     socket.on("sendMessage", async (messageData) => {
       const { senderId, receiverId, message } = messageData;
-
+    
       try {
+        
+        let conversation = await Conversation.findOne({
+          participants: { $all: [senderId, receiverId] }
+        });
+        if (!conversation) {
+          conversation = new Conversation({
+            participants: [senderId, receiverId],
+          
+          });
+          await conversation.save();
+        }
         const newMessage = new Message({ senderId, receiverId, message });
         await newMessage.save();
+    
+        conversation.lastMessage = newMessage._id;
+        await conversation.save();
 
-        // Emit the new message to the sender and receiver
+    
         io.to(senderId).emit("newMessage", newMessage);
         io.to(receiverId).emit("newMessage", newMessage);
+        const updatedSender = await User.findById(senderId);
+        const updatedReceiver = await User.findById(receiverId);
+    
+        io.to(senderId).emit("updateLastMessage", {
+          user: updatedReceiver,
+          lastMessage: newMessage,
+        });
+    
+        io.to(receiverId).emit("updateLastMessage", {
+          user: updatedSender,
+          lastMessage: newMessage,
+        });
       } catch (error) {
         console.error("Error saving message:", error);
       }
     });
+    
+    
 
     socket.on("typing", (data) => {
       try {

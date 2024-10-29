@@ -6,7 +6,7 @@ const MessageController = require("../Controller/MessageController");
 const  verifyToken= require('../Middelware/Authentication');
 
 // Define the routes
-router.get("/:userId/:otherUserId",verifyToken,MessageController.getConversationMessages);
+router.get("/:userId/:otherUserId",verifyToken,MessageController.getMessages);
 
 
 // Export the router
