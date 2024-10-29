@@ -46,13 +46,14 @@ module.exports = function (server) {
         );
     
        
-        io.emit("users", userWithLastMessages);
+        socket.emit("users", userWithLastMessages);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     });
     
 
+    // Listen for sending a message from the client
     socket.on("sendMessage", async (messageData) => {
       const { senderId, receiverId, message } = messageData;
     
